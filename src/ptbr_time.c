@@ -3,45 +3,45 @@
 
 static const char* const ONETEENS[] = {
   "zero",
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine",
-  "ten",
-  "eleven",
-  "twelve",
-  "thirteen",
-  "fourteen",
-  "fifteen",
-  "sixteen",
-  "seventeen",
-  "eighteen",
-  "nineteen"
+  "um",
+  "dois",
+  "três",
+  "quatro",
+  "cinco",
+  "seis",
+  "sete",
+  "oito",
+  "nove",
+  "dez",
+  "onze",
+  "doze",
+  "treze",
+  "quatorze",
+  "quinze",
+  "dezesseis",
+  "dezessete",
+  "dezoito",
+  "dezenove"
 };
 
 static const char* const TWENS[] = {
-  "twenty",
-  "thirty",
-  "forty",
-  "fifty",
+  "vinte",
+  "trinta",
+  "quarenta",
+  "cinquenta",
 };
 
 static const char* STR_TEEN = "teen";
 static const char* STR_OH_CLOCK = "o'clock";
 static const char* STR_OH = "o'";
-static const char* STR_NOON = "noon";
-static const char* STR_MIDNIGHT = "midnight";
-static const char* STR_QUARTER = "quarter";
+static const char* STR_NOON = "meio dia";
+static const char* STR_MIDNIGHT = "meia noite";
+static const char* STR_QUARTER = "quarto";
 static const char* STR_TO = "to";
 static const char* STR_PAST = "past";
-static const char* STR_HALF = "half";
+static const char* STR_HALF = "meia";
 static const char* STR_ITS = "it's";
-static const char* STR_ALMOST = "almost";
+static const char* STR_ALMOST = "quase";
 static const char* STR_JUST = "just";
 
 void ptbr_time_2lines(int hours, int minutes, char* str_hour, char* str_minute) {
@@ -50,7 +50,7 @@ void ptbr_time_2lines(int hours, int minutes, char* str_hour, char* str_minute) 
   strcpy(str_minute, "");
 
   if(hours == 0) {
-    strcat(str_hour,"twelve");
+    strcat(str_hour,"doze");
   }
   else {
     if (hours > 12) {
@@ -91,7 +91,7 @@ void ptbr_time_3lines(int hours, int minutes, char* str_hour, char* str_minute1,
   strcpy(str_minute2, "");
 
   if(hours == 0) {
-    strcat(str_hour,"twelve");
+    strcat(str_hour,"doze");
   }
   else {
     if (hours > 12) {
