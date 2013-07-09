@@ -1,4 +1,4 @@
-#include "english_time.h"
+#include "ptbr_time.h"
 #include "string.h"
 
 static const char* const ONETEENS[] = {
@@ -44,7 +44,7 @@ static const char* STR_ITS = "it's";
 static const char* STR_ALMOST = "almost";
 static const char* STR_JUST = "just";
 
-void english_time_2lines(int hours, int minutes, char* str_hour, char* str_minute) {
+void ptbr_time_2lines(int hours, int minutes, char* str_hour, char* str_minute) {
     
   strcpy(str_hour, "");
   strcpy(str_minute, "");
@@ -84,7 +84,7 @@ void english_time_2lines(int hours, int minutes, char* str_hour, char* str_minut
   }
 }
 
-void english_time_3lines(int hours, int minutes, char* str_hour, char* str_minute1, char* str_minute2) {
+void ptbr_time_3lines(int hours, int minutes, char* str_hour, char* str_minute1, char* str_minute2) {
   
   strcpy(str_hour, "");
   strcpy(str_minute1, "");
