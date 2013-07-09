@@ -181,7 +181,7 @@ void update_watch(PblTm* t) {
   //Let's get the new time and date
   fuzzy_time(t->tm_hour, t->tm_min, new_time.line1, new_time.line2, new_time.line3);
   string_format_time(str_topbar, sizeof(str_topbar), "%A | %e %b", t);
-  string_format_time(str_bottombar, sizeof(str_bottombar), " %H%M:%S | Day %j", t);
+  string_format_time(str_bottombar, sizeof(str_bottombar), " %H:%M:%S | Day %j", t);
   
   //Let's update the top and bottom bar anyway - **to optimize later to only update top bar every new day.
   text_layer_set_text(&topbarLayer, str_topbar);
