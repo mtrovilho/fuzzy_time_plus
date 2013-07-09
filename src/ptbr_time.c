@@ -37,12 +37,12 @@ static const char* STR_OH = "o'";
 static const char* STR_NOON = "meio dia";
 static const char* STR_MIDNIGHT = "meia noite";
 static const char* STR_QUARTER = "quarto";
-static const char* STR_TO = "to";
-static const char* STR_PAST = "past";
+static const char* STR_TO = "prás";
+static const char* STR_PAST = "depois das";
 static const char* STR_HALF = "meia";
-static const char* STR_ITS = "it's";
+static const char* STR_ITS = "são";
 static const char* STR_ALMOST = "quase";
-static const char* STR_JUST = "just";
+static const char* STR_JUST = "pouco";
 
 void ptbr_time_2lines(int hours, int minutes, char* str_hour, char* str_minute) {
     
