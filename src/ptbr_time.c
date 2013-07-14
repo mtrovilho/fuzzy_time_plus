@@ -1,10 +1,12 @@
 #include "ptbr_time.h"
-#include "string.h"
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 
-static const char* const ONETEENS[] = {
+static const char* const HOURS[] = {
   "zero",
-  "um",
-  "dois",
+  "uma",
+  "duas",
   "três",
   "quatro",
   "cinco",
@@ -21,177 +23,210 @@ static const char* const ONETEENS[] = {
   "dezesseis",
   "dezessete",
   "dezoito",
-  "dezenove"
+  "dezenove",
+  "vinte"
 };
 
-static const char* const TWENS[] = {
+static const char* const MINUTES[] = {
+  "cinco",
+  "dez",
+  "quinze",
   "vinte",
-  "trinta",
-  "quarenta",
-  "cinquenta",
+  "vinte cinco"
 };
 
-static const char* STR_TEEN = "teen";
-static const char* STR_OH_CLOCK = "o'clock";
-static const char* STR_OH = "o'";
-static const char* STR_NOON = "meio dia";
-static const char* STR_MIDNIGHT = "meia noite";
-static const char* STR_QUARTER = "quarto";
-static const char* STR_TO = "prás";
-static const char* STR_PAST = "depois das";
-static const char* STR_HALF = "meia";
-static const char* STR_ITS = "são";
-static const char* STR_ALMOST = "quase";
-static const char* STR_JUST = "pouco";
+static const char* STR_DIA   = "dia";
+static const char* STR_NOITE = "noite";
+static const char* STR_MEIO  = "meio";
+static const char* STR_MEIA  = "meia";
+static const char* STR_PONTO = "ponto";
+static const char* STR_POUCO = "pouco";
+static const char* STR_QUASE = "quase";
+static const char* STR_PRAS  = "pras";
+static const char* STR_PRA   = "pra";
+static const char* STR_E     = "e";
+static const char* STR_EM    = "em";
 
-void ptbr_time_2lines(int hours, int minutes, char* str_hour, char* str_minute) {
-    
-  strcpy(str_hour, "");
-  strcpy(str_minute, "");
-
-  if(hours == 0) {
-    strcat(str_hour,"doze");
+/**
+ * Format Full Hour
+ * ----------------
+ *
+ * 1.
+ * 2. meio/meia
+ * 3. dia/noite
+ *
+ * or
+ *
+ * 1. hora
+ * 2. em
+ * 3. ponto
+ */
+void
+format_full_hour(int hour, char *line1, char *line2, char *line3)
+{
+  // meia noite
+  if (hour == 0) {
+    strcat(line2, STR_MEIA);
+    strcat(line3, STR_NOITE);
   }
+
+  // meio dia
+  else if (hour == 12) {
+    strcat(line2, STR_MEIO);
+    strcat(line3, STR_DIA);
+  }
+
+  // hora em ponto
   else {
-    if (hours > 12) {
-      hours = hours - 12;
-    }
-    strcat(str_hour, ONETEENS[hours]);
-  }
-
-  if(minutes == 0){
-    strcat(str_minute,STR_OH_CLOCK);
-  }
-  else {
-    if(minutes < 20) {
-      if(minutes < 10) {
-        strcat(str_minute, STR_OH);  
-      }
-      strcat(str_minute, ONETEENS[minutes]);
-      if((minutes == 14) || (minutes > 15)) {
-        strcpy(str_minute, ONETEENS[minutes-10]);
-        strcat(str_minute, "\n");
-        strcat(str_minute, STR_TEEN);
-      }
-    }
-    else {
-      strcat(str_minute, TWENS[((minutes/10)%10)-2]);
-      if((minutes%10)>0) {
-        strcat(str_minute, "\n");
-        strcat(str_minute, ONETEENS[minutes%10]); 
-      } 
-    }
+    if (hour > 12)
+      hour -= 12;
+    strcat(line1, HOURS[hour]);
+    strcat(line2, STR_EM);
+    strcat(line3, STR_PONTO);
   }
 }
 
-void ptbr_time_3lines(int hours, int minutes, char* str_hour, char* str_minute1, char* str_minute2) {
-  
-  strcpy(str_hour, "");
-  strcpy(str_minute1, "");
-  strcpy(str_minute2, "");
+/**
+  * First 30 minutes
+  * ----------------
+  *
+  * 1. meio/meia
+  * 2. dia/noite e
+  * 3. minuto / 5
+  *
+  * or
+  *
+  * 1: hora
+  * 2: e
+  * 3: minuto / 5
+  */
+void
+format_first_half(int hour, int minute, char *line1, char *line2, char *line3)
+{
+  // meia noite
+  if (hour == 0) {
+    strcat(line1, STR_MEIA);
+    strcat(line2, STR_NOITE);
+    strcat(line2, " ");
+  }
 
-  if(hours == 0) {
-    strcat(str_hour,"doze");
+  // meio dia
+  else if (hour == 12) {
+    strcat(line1, STR_MEIO);
+    strcat(line2, STR_DIA);
+    strcat(line2, " ");
+  }
+
+  // hora
+  else {
+    if (hour > 12)
+      hour -= 12;
+    strcat(line1, HOURS[hour]);
+  }
+
+  // minutes in multiple of five
+  int multiple = (int)roundf(minute / 5.0f);
+
+  // e minuto
+  strcat(line2, STR_E);
+  if (multiple == 0)
+    strcat(line3, STR_POUCO);
+  else if (multiple == 6)
+    strcat(line3, STR_MEIA);
+  else
+    strcat(line3, MINUTES[multiple - 1]);
+}
+
+/**
+  * Last 30 minutes
+  * ----------------
+  *
+  * 1. minuto / 5
+  * 2. pra meio/meia
+  * 3. dia/noite
+  *
+  * or
+  *
+  * 1: minuto / 5
+  * 2: pra(s)
+  * 3: hora
+  */
+void
+format_last_half(int hour, int minute, char *line1, char *line2, char *line3)
+{
+  // minutes in multiple of five
+  int multiple = 12 - (int)roundf(minute / 5.0f);
+
+  // minuto
+  if (multiple == 0) {
+    strcat(line2, STR_QUASE);
   }
   else {
-    if (hours > 12) {
-      hours = hours - 12;
-    }
-    strcat(str_hour, ONETEENS[hours]);
+    // pra(s)
+    if (hour == 0 || hour == 11 || hour == 23)
+      strcat(line2, STR_PRA);
+    else
+      strcat(line2, STR_PRAS);
+
+    strcat(line1, MINUTES[multiple - 1]);
   }
 
-  if(minutes == 0){
-    strcat(str_minute1,STR_OH_CLOCK);
+  // meio dia
+  if (hour == 11) {
+    strcat(line2, " ");
+    strcat(line2, STR_MEIO);
+    strcat(line3, STR_DIA);
   }
+
+  // meia noite
+  else if (hour == 23) {
+    strcat(line2, " ");
+    strcat(line2, STR_MEIA);
+    strcat(line3, STR_NOITE);
+  }
+
+  // hora
   else {
-    if(minutes < 20) {
-      if(minutes < 10) {
-        strcat(str_minute1, STR_OH);  
-      }
-      strcat(str_minute1, ONETEENS[minutes]);
-      if((minutes == 14) || (minutes > 15)) {
-        strcpy(str_minute1, ONETEENS[minutes-10]);
-        strcpy(str_minute2, STR_TEEN);
-      }
-    }
-    else {
-      strcat(str_minute1, TWENS[((minutes/10)%10)-2]);
-      if((minutes%10)>0) {
-        strcat(str_minute2, ONETEENS[minutes%10]); 
-      } 
-    }
+    if (hour > 12)
+      hour -= 12;
+    strcat(line3, HOURS[hour + 1]);
   }
 }
 
-void fuzzy_time(int hours, int minutes, char* line1, char* line2, char* line3) {
+/**
+ * Format Invalid
+ * --------------
+ *
+ * Debug
+ */
+void
+format_invalid(int hour, int minute, char *line1, char *line2, char *line3)
+{
+  /*char buff[10];*/
+  /*sprintf(buff, "%02i:%02i", hour, minute);*/
 
+  strcat(line1, "invalid");
+  strcat(line2, "format");
+  /*strcat(line3, buff);*/
+}
+
+void
+fuzzy_time(int hour, int minute, char *line1, char *line2, char *line3)
+{
+  // clear lines
   strcpy(line1, "");
   strcpy(line2, "");
   strcpy(line3, "");
 
-  if (minutes > 0 && minutes < 5) {
-    strcat(line1,STR_JUST);
-  }
-  else if ((minutes >= 5 && minutes < 10) || (minutes >= 55 && minutes < 58)) {
-    strcat(line1,ONETEENS[5]);
-  }
-  else if ((minutes >= 10 && minutes < 15) || (minutes >= 50 && minutes < 55)) {
-    strcat(line1,ONETEENS[10]);
-  }
-  else if ((minutes >= 15 && minutes < 20) || (minutes >= 45 && minutes < 50)) {
-    strcat(line1,STR_QUARTER);
-  }
-  else if ((minutes >= 20 && minutes < 25) || (minutes >= 40 && minutes < 45)) {
-    strcat(line1,TWENS[0]);
-  }
-  else if ((minutes >= 25 && minutes < 30) || (minutes >= 35 && minutes < 40)) {
-    strcat(line1,TWENS[0]);
-    strcat(line2,ONETEENS[5]);
-    strcat(line2," ");
-  }
-  else if (minutes >= 30 && minutes < 35) {
-    strcat(line1,STR_HALF);
-  }
-  else if (minutes >=58 && minutes < 60) {
-    strcat(line1,STR_ALMOST);
-  }
-
-  if(minutes == 0){
-    strcat(line1,STR_ITS);
-    if(hours == 0) {
-      strcat(line2,STR_MIDNIGHT);
-    }
-    else if (hours == 12) {
-      strcat(line2, STR_NOON);
-    }
-    else {
-      if (hours > 12) hours -= 12;
-      strcat(line2, ONETEENS[hours]);
-      strcat(line3, STR_OH_CLOCK);
-    }
-  } 
-  else {
-    if(minutes < 35) {
-      if (hours > 12) hours -= 12;
-      strcat(line2,STR_PAST);
-    }
-    else {
-      hours += 1;
-      if (hours == 24) hours = 0;
-      if (hours > 12) hours -= 12;
-      strcat(line2,STR_TO);
-    }
-
-    if(hours == 0) {
-      strcat(line3,STR_MIDNIGHT);
-    }
-    else if (hours == 12) {
-      strcat(line3, STR_NOON);
-    }
-    else {
-      strcat(line3, ONETEENS[hours]);
-    }
-
-  }
-  
+  // full hour
+  if (minute == 0)
+    format_full_hour(hour, line1, line2, line3);
+  // first half
+  else if (minute > 0 && minute < 33)
+    format_first_half(hour, minute, line1, line2, line3);
+  // last half
+  else if (minute >= 33 && minute < 60)
+    format_last_half(hour, minute, line1, line2, line3);
+  else
+    format_invalid(hour, minute, line1, line2, line3);
 }
