@@ -16,18 +16,11 @@ static const char* const HOURS[] = {
   "nove",
   "dez",
   "onze",
-  "doze",
-  "treze",
-  "quatorze",
-  "quinze",
-  "dezesseis",
-  "dezessete",
-  "dezoito",
-  "dezenove",
-  "vinte"
+  "doze"
 };
 
 static const char* const MINUTES[] = {
+  "zero",
   "cinco",
   "dez",
   "quinze",
@@ -134,7 +127,7 @@ format_first_half(int hour, int minute, char *line1, char *line2, char *line3)
   else if (multiple == 6)
     strcat(line3, STR_MEIA);
   else
-    strcat(line3, MINUTES[multiple - 1]);
+    strcat(line3, MINUTES[multiple]);
 }
 
 /**
@@ -168,7 +161,7 @@ format_last_half(int hour, int minute, char *line1, char *line2, char *line3)
     else
       strcat(line2, STR_PRAS);
 
-    strcat(line1, MINUTES[multiple - 1]);
+    strcat(line1, MINUTES[multiple]);
   }
 
   // meio dia
@@ -187,9 +180,10 @@ format_last_half(int hour, int minute, char *line1, char *line2, char *line3)
 
   // hora
   else {
+    hour += 1;
     if (hour > 12)
       hour -= 12;
-    strcat(line3, HOURS[hour + 1]);
+    strcat(line3, HOURS[hour]);
   }
 }
 
